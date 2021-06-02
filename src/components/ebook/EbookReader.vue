@@ -4,7 +4,10 @@
         <div class="ebook-reader-mask"
         @click="onMaskClick"
         @touchmove="move"
-        @touchend="moveEnd"></div>
+        @touchend="moveEnd"
+        @mousedown.left="onMouseEnter"
+        @mousemove.left="onMouseMove"
+        @mouseup.left="onMouseEnd"></div>
     </div>
 </template>
 
@@ -18,6 +21,43 @@ global.ePub = Epub
 export default {
     mixins:[ebookMixin],
     methods:{
+        //1.鼠标进入2.进入后移动3.从移动状态松手4.鼠标还原
+        onMouseEnd(e){
+            if(this.mouseState === 2){
+                 this.setOffsetY(0)
+                this.firstOffsetY = null
+                this.mouseState = 3
+            }else{
+                this.mouseState = 4
+            }
+            const  time = e.timeStamp - this.mouseStartTime
+            if(time < 200){
+               this.mouseState = 4  
+            }
+            e.preventDefault()
+            e.stopPropagation()
+        },
+        onMouseMove(e){
+            if(this.mouseState === 1){
+                this.mouseState = 2
+            }else if(this.mouseState === 2){
+                let offsetY = 0
+                if(this.firstOffsetY){
+                    offsetY = e.clientY - this.firstOffsetY
+                    this.setOffsetY(offsetY)
+                }else{
+                    this.firstOffsetY = e.clientY
+                }
+            }
+            e.preventDefault()
+            e.stopPropagation()
+        },
+        onMouseEnter(e){
+            this.mouseState = 1
+            this.mouseStartTime = e.timeStamp
+            e.preventDefault()
+            e.stopPropagation()
+        },
         move(e){
             let offsetY = 0
             if(this.firstOffsetY){
@@ -34,6 +74,9 @@ export default {
             this.firstOffsetY = null
         },
         onMaskClick(e){
+            if(this.mouseState && (this.mouseState === 2 || this.mouseState === 3)){
+                return
+            }
             const offsetX = e.offsetX
             const width = window.innerWidth
             if(offsetX > 0 && offsetX < width* 0.3){
@@ -194,7 +237,34 @@ export default {
                 //分页算法
                 return this.book.locations.generate(750 * (window.innerWidth / 375)
                 * (getFontSize(this.fileName) / 16))
-            }).then(location => {
+            }).then(locations => {
+                this.navigation.forEach(nav => {
+                    nav.pagelist = []
+                })
+                locations.forEach(item => {
+                    const loc = item.match(/\[(.*)\]!/)[1]
+                    //console.log(loc)
+                    this.navigation.forEach(nav => {
+                        if (nav.href) {
+                        const href = nav.href.match(/^(.*)\.html$/)[1]
+                        if(href === loc){
+                           nav.pagelist.push(item) 
+                        }
+                        
+                    }
+            })
+            let currentPage = 1
+            this.navigation.forEach((nav, index) => {
+              if (index === 0) {
+                nav.page = 1
+              } else {
+                nav.page = currentPage
+              }
+              currentPage += nav.pagelist.length + 1
+            })
+          })
+          // saveNavigation(this.fileName, this.navigation)
+                this.setPagelist(locations)
                 this.setBookAvailable(true)
                 this.refreshLocation()
             })

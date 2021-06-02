@@ -16,7 +16,7 @@
                     </div>
                     <div class="content-page-tab-item" 
                         :class="{'selected':currentTab === 2}"
-                        @click="selectTab(1)">
+                        @click="selectTab(2)">
                         {{$t('book.bookmark')}}
                     </div>
                 </div>
@@ -34,6 +34,7 @@
 
 <script>
 import { ebookMixin } from '../../utils/mixin'
+import EbookSlideBookmark from './EbookSlideBookmark'
 import EbookLoading from './EbookLoading.vue'
 import EbookSlideContents from './EbookSlideContents'
 export default {
@@ -43,7 +44,7 @@ export default {
         return{
             currentTab:1,
             content:EbookSlideContents,
-            bookmark:null
+            bookmark:EbookSlideBookmark
         }
     },
     methods:{

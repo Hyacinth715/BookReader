@@ -37,18 +37,6 @@ import { getReadTime } from '../../utils/localStorage'
 import { ebookMixin } from '../../utils/mixin'
 export default {
     mixins:[ebookMixin],
-    computed:{
-        getSectionName(){
-            // if(this.section){
-            //     const sectionInfo = this.currentBook.section(this.section)
-            //     if(sectionInfo && sectionInfo.href){
-            //         return this.currentBook.navigation.get(sectionInfo.href).label
-            //     }
-            // }
-            // return ''
-            return this.section ? this.navigation[this.section].label : ''
-        }
-    },
     methods:{
         //拖动后松手后
        onProgressChange(progress){

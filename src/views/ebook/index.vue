@@ -1,14 +1,19 @@
 <template>
     <div class="ebook" ref="ebook">
+        <ebook-header></ebook-header>
         <ebook-menu></ebook-menu>
         <ebook-title></ebook-title>
         <ebook-reader></ebook-reader>
         <ebook-bookmark></ebook-bookmark>
+        <ebook-footer></ebook-footer>
+        
     </div>
 </template>
 
 <script>
 import EbookBookmark from '../../components/ebook/EbookBookmark.vue'
+import EbookFooter from '../../components/ebook/EbookFooter.vue'
+import EbookHeader from '../../components/ebook/EbookHeader.vue'
 import EbookMenu from '../../components/ebook/EbookMenu.vue'
 import EbookReader from '../../components/ebook/EbookReader.vue'
 import EbookTitle from '../../components/ebook/EbookTitle.vue'
@@ -16,7 +21,7 @@ import { getReadTime, saveReadTime } from '../../utils/localStorage'
 import { ebookMixin } from '../../utils/mixin'
 export default {
   mixins:[ebookMixin],
-  components: { EbookReader, EbookTitle, EbookMenu, EbookBookmark },
+  components: { EbookReader, EbookTitle, EbookMenu, EbookBookmark, EbookHeader, EbookFooter },
   watch:{
       offsetY(v){
           if(!this.menuVisible && this.bookAvailable){

@@ -27,7 +27,17 @@ export const ebookMixin = {
     ]),
     themeList(){
       return themeList(this)
-    }
+    },
+    getSectionName(){
+      // if(this.section){
+      //     const sectionInfo = this.currentBook.section(this.section)
+      //     if(sectionInfo && sectionInfo.href){
+      //         return this.currentBook.navigation.get(sectionInfo.href).label
+      //     }
+      // }
+      // return ''
+      return this.section ? this.navigation[this.section].label : ''
+  }
   },
   methods: {
     ...mapActions([
@@ -90,6 +100,18 @@ export const ebookMixin = {
             }
           }else{
             this.setIsBookmark(false)
+          }
+
+          if(this.pagelist){
+            const totalPage = this.pagelist.length
+            const currentPage = currentLocation.start.location
+            if(currentPage && currentPage > 0){
+              this.setPaginate(currentPage + ' / ' + totalPage)
+            }else{
+              this.setPaginate('')
+            }
+          }else{
+            this.setPaginate('')
           }
       }
      
