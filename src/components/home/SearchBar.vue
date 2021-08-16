@@ -83,7 +83,12 @@ export default {
             }else{
                 this.hideShadow()
             }
-            this.hideHotSearch()
+            if(this.hotSearchVisible){
+                this.hideHotSearch()
+            }else{
+                this.$router.push('/store/shelf')
+            }
+            
             
         },
         hideHotSearch(){

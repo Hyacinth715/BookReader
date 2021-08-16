@@ -17,6 +17,7 @@ import { ebookMixin } from '../../utils/mixin'
 import Epub from 'epubjs'
 import { getFontFamily, getFontSize, getLocation, getTheme, saveFontFamily, saveFontSize, saveTheme } from '../../utils/localStorage'
 import { flatten } from '../../utils/book'
+import { getLocalForage } from '../../utils/localForage'
 global.ePub = Epub
 export default {
     mixins:[ebookMixin],
@@ -223,10 +224,10 @@ export default {
 
             })
         },
-        initEpub(){
+        initEpub(url){
     
             //const url = 'http://10.100.143.87:8081/epub/' + this.fileName + '.epub'
-            const url = process.env.VUE_APP_RES_URL+ '/epub/' + this.fileName + '.epub'
+            
             //const url = 'http://172.24.182.74:8081/epub/' + this.fileName + '.epub'
             this.book = new Epub(url)
             this.setCurrentBook(this.book)
@@ -274,10 +275,23 @@ export default {
         }
     },
     mounted(){
-        this.setFileName(this.$route.params.fileName.split('|').join('/')
-        ).then(() => {
-            this.initEpub()
+        const books = this.$route.params.fileName.split('|')
+        const fileName = books[1]
+        getLocalForage(fileName,(err,blob)=>{
+            if(!err && blob){
+                console.log('找到离线缓存电子书')
+                this.setFileName(books.join('/')).then(() => {
+                    this.initEpub(blob)
+                })
+            }else{
+                console.log('在线获取电子书')
+                this.setFileName(books.join('/')).then(() => {
+                    const url = process.env.VUE_APP_RES_URL+ '/epub/' + this.fileName + '.epub'
+                    this.initEpub(url)
+                })
+            }
         })
+        
     }
 }
 </script>
